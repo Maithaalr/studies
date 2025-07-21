@@ -252,37 +252,33 @@ if uploaded_file:
 
     # --------- Tab 9 ---------
     with tab9:
-        st.markdown("### الموظفون الثانويين بدون درجة مؤهل واضحة")
+        st.markdown("### الموظفون الذين لديهم مؤهل دراسي معروف ولكن بدون درجة المؤهل")
 
+        # تأكد من وجود الأعمدة المطلوبة
         if 'المستوى التعليمي' in df.columns and 'درجة المؤهل' in df.columns:
-            academic_levelsss = ['ثانوي', 'ثانوية عامة']
+            # المستويات المطلوبة
+            academic_levelss = ['ثانوي', 'ثانوية عامة']
 
-            df['درجة المؤهل'] = df['درجة المؤهل'].astype(str).str.strip()
+            # تصفية البيانات
+            filtered_df = df[
+                df['المستوى التعليمي'].isin(academic_levelss) &
+                df['درجة المؤهل'].isnull()
+            ]
 
-            known_secondary_df = df[df['المستوى التعليمي'].isin(academic_levelsss)]
+            # عرض النتائج
+            st.write(f"عدد الموظفين الذين تنطبق عليهم الشروط: **{filtered_df.shape[0]}**")
+            st.dataframe(filtered_df)
 
-            missing_conditions = known_secondary_df['درجة المؤهل'].isin(["-", "لا يوجد", "/", "nan", "NaN", "None", ""])
-            missing_conditions |= known_secondary_df['درجة المؤهل'].isnull()
-
-            filtered_secondary = known_secondary_df[missing_conditions]
-
-            count_missing_sec = filtered_secondary.shape[0]
-            total_sec = known_secondary_df.shape[0]
-            percentage_sec = round((count_missing_sec / total_sec) * 100, 1) if total_sec else 0
-
-            st.success(f"عدد الموظفين: **{count_missing_sec}** من أصل **{total_sec}** ({percentage_sec}%)")
-            st.dataframe(filtered_secondary, use_container_width=True)
-
-            # تحميل CSV
-            if not filtered_secondary.empty:
-                csv_sec = filtered_secondary.to_csv(index=False).encode("utf-8-sig")
+            # زر تحميل النتائج كـ Excel
+            if not filtered_df.empty:
+                output_excel = filtered_df.to_excel(index=False, encoding='utf-8')
                 st.download_button(
-                    label="📥 تحميل النتائج كـ CSV",
-                    data=csv_sec,
-                    file_name="ثانوي_بدون_درجة_مؤهل.csv",
-                    mime="text/csv"
+                    label="📥 تحميل النتائج كملف Excel",
+                    data=output_excel,
+                    file_name="الموظفون_بدون_درجة_مؤهل.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
         else:
-            st.warning("البيانات لا تحتوي على العمودين 'المستوى التعليمي' و'درجة المؤهل'.")
+            st.warning("البيانات لا تحتوي على العمودين 'المستوى الدراسي' و'درجة المؤهل'.
 
 
