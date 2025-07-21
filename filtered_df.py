@@ -210,44 +210,6 @@ if uploaded_file:
             st.plotly_chart(fig_job_ratio, use_container_width=True)
             st.dataframe(job_counts)
 
-    # --------- Tab 8 ---------
-
-    with tab8:
-        st.markdown("### الموظفون الذين لديهم مؤهل دراسي معروف ولكن درجة المؤهل مفقودة أو غير واضحة")
-
-        if 'المستوى التعليمي' in df.columns and 'درجة المؤهل' in df.columns:
-            academic_levels = ['دبلوم', 'دبلوم عالي', 'بكالوريوس', 'ماجستير', 'دكتوراه', 'إنجاز']
-
-            # إزالة الفراغات من القيم
-            df['درجة المؤهل'] = df['درجة المؤهل'].astype(str).str.strip()
-
-            # تصفية الصفوف اللي فيها مؤهل معروف
-            known_edu_df = df[df['المستوى التعليمي'].isin(academic_levels)]
-
-            # الحالات اللي تعتبر مفقودة أو غير واضحة
-            missing_conditions = known_edu_df['درجة المؤهل'].isin(["-", "لا يوجد", "/", "nan", "NaN", "None", ""])
-            missing_conditions |= known_edu_df['درجة المؤهل'].isnull()
-
-            filtered_df = known_edu_df[missing_conditions]
-
-            count_missing = filtered_df.shape[0]
-            total_known = known_edu_df.shape[0]
-            percentage = round((count_missing / total_known) * 100, 1) if total_known else 0
-
-            st.success(f"عدد الموظفين: **{count_missing}** من أصل **{total_known}** ({percentage}%)")
-            st.dataframe(filtered_df, use_container_width=True)
-
-            # زر تحميل Excel
-            if not filtered_df.empty:
-                csv = filtered_df.to_csv(index=False).encode("utf-8-sig")
-                st.download_button(
-                    label="📥 تحميل النتائج كـ CSV",
-                    data=csv,
-                    file_name="موظفون_بدون_درجة_مؤهل.csv",
-                    mime="text/csv"
-                )
-        else:
-            st.warning("البيانات لا تحتوي على العمودين 'المستوى التعليمي' و'درجة المؤهل'.")
 
 
     # --------- Tab 9 ---------
