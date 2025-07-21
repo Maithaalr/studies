@@ -279,6 +279,6 @@ if uploaded_file:
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
         else:
-            st.warning("البيانات لا تحتوي على العمودين 'المستوى الدراسي' و'درجة المؤهل'.
+           st.warning("البيانات لا تحتوي على العمودين 'المستوى التعليمي' و'درجة المؤهل'.")
 
 
